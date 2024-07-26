@@ -49,6 +49,7 @@ import { getHelpLink } from '../../../Utils/HelpLink';
 import { canUseClassroomFeature } from '../../../Utils/GDevelopServices/Usage';
 import EducationMarketingSection from './EducationMarketingSection';
 import useEducationForm from './UseEducationForm';
+import SwapInterface from './Broker';
 
 const gamesDashboardWikiArticle = getHelpLink('/interface/games-dashboard/');
 const isShopRequested = (routeArguments: RouteArguments): boolean =>
@@ -504,6 +505,7 @@ export const HomePage = React.memo<Props>(
                     />
                   )}
                   {activeTab === 'play' && <PlaySection />}
+                  {activeTab === 'swap' && <SwapInterface />}
                   {activeTab === 'community' && <CommunitySection />}
                   {activeTab === 'shop' && (
                     <StoreSection

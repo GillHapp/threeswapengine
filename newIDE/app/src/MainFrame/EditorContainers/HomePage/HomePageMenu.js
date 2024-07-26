@@ -45,7 +45,7 @@ export const styles = {
 
 export type HomeTab =
   // | 'get-started'
-  'manage' | 'build' | 'learn' | 'play' | 'community' | 'shop' | 'team-view';
+  'manage' | 'build' | 'learn' | 'play' | 'swap' | 'shop' | 'team-view';
 
 export type GetIconFunction = ({
   color: string,
@@ -108,6 +108,14 @@ const homePageMenuTabs: { [tab: string]: HomePageMenuTab } = {
       <GoogleControllerIcon fontSize={fontSize} color={color} />
     ),
   },
+  swap: {
+    label: <Trans>Swap</Trans>,
+    tab: 'swap',
+    id: 'home-swap-tab',
+    getIcon: ({ color, fontSize }) => (
+      <GoogleControllerIcon fontSize={fontSize} color={color} />
+    ),
+  },
   // community: {
   //   label: <Trans>Community</Trans>,
   //   tab: 'community',
@@ -149,6 +157,7 @@ export const getTabsToDisplay = ({
     'shop',
     // 'learn',
     displayPlayTab ? 'play' : null,
+    'swap',
     // 'community',
   ].filter(Boolean);
   return tabs.map(tab => homePageMenuTabs[tab]);
@@ -191,7 +200,7 @@ export const HomePageMenu = ({
       ),
     },
     {
-      label: <Trans>About ClickEngine</Trans>,
+      label: <Trans>About SpriteSmith</Trans>,
       id: 'about-gdevelop',
       // onClick: onOpenAbout,
       onClick: () => {},
