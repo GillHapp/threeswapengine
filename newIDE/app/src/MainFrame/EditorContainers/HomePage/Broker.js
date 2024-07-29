@@ -162,6 +162,16 @@ const SwapInterface: React.FC = () => {
                 onChange={(e) => setDestinationAddr(e.target.value)}
                 className="input"
               />
+              <input
+                type="text"
+                name="amount"
+                id="amount"
+                placeholder="Amount to be swapped"
+                required
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="input"
+              />
             </div>
             <label htmlFor="sourceAsset" className="label">Select Source Asset</label>
             <select
@@ -171,12 +181,12 @@ const SwapInterface: React.FC = () => {
               onChange={(e) => setSourceAsset(e.target.value)}
             >
               <option value="">Choose an asset</option>
-              <option value="btc.btc">btc.btc</option>
-              <option value="dot.dot">dot.dot</option>
-              <option value="eth.arb">eth.arb</option>
+              {/* <option value="btc.btc">btc.btc</option> */}
+              {/* <option value="dot.dot">dot.dot</option> */}
+              {/* <option value="eth.arb">eth.arb</option> */}
               <option value="eth.eth">eth.eth</option>
               <option value="flip.eth">flip.eth</option>
-              <option value="usdc.arb">usdc.arb</option>
+              {/* <option value="usdc.arb">usdc.arb</option> */}
               <option value="usdt.eth">usdt.eth</option>
             </select>
             <label htmlFor="destinationAsset" className="label">Select Destination Asset</label>
