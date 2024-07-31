@@ -116,22 +116,7 @@ const homePageMenuTabs: { [tab: string]: HomePageMenuTab } = {
       <GoogleControllerIcon fontSize={fontSize} color={color} />
     ),
   },
-  // community: {
-  //   label: <Trans>Community</Trans>,
-  //   tab: 'community',
-  //   id: 'home-community-tab',
-  //   getIcon: ({ color, fontSize }) => (
-  //     <WebIcon fontSize={fontSize} color={color} />
-  //   ),
-  // },
-  // 'team-view': {
-  //   label: <Trans>Classrooms</Trans>,
-  //   tab: 'team-view',
-  //   id: 'team-view-tab',
-  //   getIcon: ({ color, fontSize }) => (
-  //     <BookLeafIcon fontSize={fontSize} color={color} />
-  //   ),
-  // },
+  
 };
 
 export const getTabsToDisplay = ({
