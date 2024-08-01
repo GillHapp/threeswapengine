@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ethers } from 'ethers';
-import './SwapInterface.css';
+import './styles.css';
 
 const SwapInterface = () => {
   const [destinationAddr, setDestinationAddr] = useState('');
@@ -11,8 +11,8 @@ const SwapInterface = () => {
   const [status, setStatus] = useState('');
   const [id, setId] = useState('');
   const [amount, setAmount] = useState('1');
-  const [provider, setProvider] = useState(null);
-  const [signer, setSigner] = useState(null);
+  const [provider, setProvider] = useState('');
+  const [signer, setSigner] = useState('')
   const [loading, setLoading] = useState(false);
 
   const handleClick = async (e) => {
@@ -62,9 +62,9 @@ const SwapInterface = () => {
       // Check if the source asset is Sepolia ETH'
       if (sourceAsset === "eth.eth") {
 
-        const tx = await signer.sendTransaction({
+        const tx = await (signer).sendTransaction({
           to: depositAddr,
-          value: ethers.parseEther(amount) // ETH has 18 decimals
+          value: ethers.parseEther(amount)
         });
         console.log('Transaction:', tx);
         await tx.wait();
@@ -165,79 +165,117 @@ const SwapInterface = () => {
 
   return (
     <div className="container">
-      <h1>Swap Interface</h1>
-      <form>
-        <div>
-          <label>Destination address:</label>
-          <input
-            type="text"
-            value={destinationAddr}
-            onChange={(e) => setDestinationAddr(e.target.value)}
-          />
+      <div className='title'>Swap</div>
+      <div className="wrapper">
+        <div className="box">
+          <ul className='radio-group'>
+            <li className="radio-item">
+              <div className="flex items-center ps-3">
+                <input id="horizontal-list-radio-license" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" />
+                <label htmlFor="horizontal-list-radio-license" className="radio-label">Maya</label>
+              </div>
+            </li>
+            <li className="radio-item">
+              <div className="flex items-center ps-3">
+                <input id="horizontal-list-radio-license" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" />
+                <label htmlFor="horizontal-list-radio-license" className="radio-label">THORChain</label>
+              </div>
+            </li>
+            <li className="radio-item">
+              <div className="flex items-center ps-3">
+                <input id="horizontal-list-radio-license" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" />
+                <label htmlFor="horizontal-list-radio-license" className="radio-label">ChainFlip</label>
+              </div>
+            </li>
+          </ul>
+          <div className="flex w-full h-[90%] p-6">
+            <div className="w-full border border-gray-400 p-8 rounded-xl mr-4 flex flex-col justify-center items-center min-h-[300px] bg-white shadow-md">
+              <form className="form">
+                <div className="form-group">
+                  <input type="text" name="floating_email" id="floating_email" className="form-input" placeholder=" " required value={destinationAddr} onChange={(e) => setDestinationAddr(e.target.value)} />
+                  <label htmlFor="floating_email" className="form-label">Destination address</label>
+                </div>
+                <div className="form-group pt-6">
+                  <input type="text" name="floating_amount" id="floating_amount" className="form-input" placeholder=" " required value={amount} onChange={(e) => setAmount(e.target.value)} />
+                  <label htmlFor="floating_amount" className="form-label">Amount to be swapped</label>
+                </div>
+                <label htmlFor="sourceAsset" className="block mt-4 text-sm font-medium text-black">Select Source Asset</label>
+                <select
+                  id="sourceAsset"
+                  className="select"
+                  value={sourceAsset}
+                  onChange={(e) => setSourceAsset(e.target.value)}
+                >
+                  <option value="" disabled>Choose an asset</option>
+                  <option value="eth.eth">eth.eth</option>
+                  <option value="flip.eth">flip.eth</option>
+                  <option value="usdt.eth">usdt.eth</option>
+                </select>
+                <label htmlFor="destAsset" className="block mt-4 text-sm font-medium text-gray-900">Select Destination Asset</label>
+                <select
+                  id="destAsset"
+                  className="select"
+                  value={destinationAsset}
+                  onChange={(e) => setDestinationAsset(e.target.value)}
+                >
+                  <option value="" disabled>Choose an asset</option>
+                  <option value="btc.btc">btc.btc</option>
+                  <option value="dot.dot">dot.dot</option>
+                  <option value="eth.arb">eth.arb</option>
+                  <option value="eth.eth">eth.eth</option>
+                  <option value="flip.eth">flip.eth</option>
+                  <option value="usdc.arb">usdc.arb</option>
+                  <option value="usdt.eth">usdt.eth</option>
+                </select>
+                <button className="button" onClick={handleClick} disabled={loading}>
+                  {loading ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l4-4-4-4v4a12 12 0 11-8 8z"></path>
+                      </svg>
+                      Swapping...
+                    </span>
+                  ) : (
+                    'Swap'
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
-        <div>
-          <label>Amount to be swapped:</label>
-          <input
-            type="text"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Select Source Asset:</label>
-          <select
-            value={sourceAsset}
-            onChange={(e) => setSourceAsset(e.target.value)}
-          >
-            <option value="" disabled>Choose an asset</option>
-            <option value="eth.eth">eth.eth</option>
-            <option value="flip.eth">flip.eth</option>
-            <option value="usdt.eth">usdt.eth</option>
-          </select>
-        </div>
-        <div>
-          <label>Select Destination Asset:</label>
-          <select
-            value={destinationAsset}
-            onChange={(e) => setDestinationAsset(e.target.value)}
-          >
-            <option value="" disabled>Choose an asset</option>
-            <option value="btc.btc">btc.btc</option>
-            <option value="dot.dot">dot.dot</option>
-            <option value="eth.arb">eth.arb</option>
-            <option value="eth.eth">eth.eth</option>
-            <option value="flip.eth">flip.eth</option>
-            <option value="usdc.arb">usdc.arb</option>
-            <option value="usdt.eth">usdt.eth</option>
-          </select>
-        </div>
-        <button onClick={handleClick}>
-          Swap
-        </button>
-      </form>
+        <div className="info-box">
+          <h2 className="info-title">Info</h2>
+          <p className="info-text">Deposit Address: {depositAddr || '...'}</p>
+          <p className="info-text">Time Duration: 24hrs</p>
 
-      <div className="info-container">
-        {loading ? (
-          <div className="loading"></div>
-        ) : (
-          <>
-            <h2>Info</h2>
-            <p>Deposit Address: {depositAddr || '...'}</p>
-            <p>Time Duration: 24hrs</p>
-            {depositAddr && (
-              <p>Deposit {sourceAsset} to {depositAddr} address to initiate swap</p>
+          {depositAddr && (
+            <p className="info-text">
+              {`Deposit ${sourceAsset} to ${depositAddr} address to initiate swap`}
+            </p>
+          )}
+
+          <p className='info-text'>{`Status: ${status}`}</p>
+
+          <button onClick={handleDeposit} className='button' disabled={loading}>
+            {loading ? (
+              <span className="flex items-center">
+                <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l4-4-4-4v4a12 12 0 11-8 8z"></path>
+                </svg>
+                Processing...
+              </span>
+            ) : (
+              'Deposit'
             )}
-            <p>Status: {status}</p>
-            <button onClick={handleDeposit}>
-              Deposit
-            </button>
-            {status === 'COMPLETE' && <p>Swap Completed</p>}
-          </>
-        )}
+          </button>
+
+          {status === 'COMPLETE' && <p className='info-text-success'>Swap Completed</p>}
+        </div>
       </div>
     </div>
   );
-
 }
 
 export default SwapInterface;
