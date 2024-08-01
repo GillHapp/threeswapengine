@@ -29,7 +29,8 @@
   gap: 16px;
 }
 
-.form-container, .info-container {
+.form-container,
+.info-container {
   width: 50%;
   border: 1px solid #cbd5e0;
   padding: 32px;
@@ -44,7 +45,8 @@
   transition: transform 0.3s ease;
 }
 
-.form-container:hover, .info-container:hover {
+.form-container:hover,
+.info-container:hover {
   transform: translateY(-5px);
 }
 
@@ -137,7 +139,8 @@
     flex-direction: column;
   }
 
-  .form-container, .info-container {
+  .form-container,
+  .info-container {
     width: 100%;
     margin: 8px 0;
   }
@@ -153,7 +156,8 @@
   margin: auto;
 }
 
-.double-bounce1, .double-bounce2 {
+.double-bounce1,
+.double-bounce2 {
   width: 100%;
   height: 100%;
   border-radius: 50%;
@@ -170,8 +174,15 @@
 }
 
 @keyframes sk-bounce {
-  0%, 100% { transform: scale(0.0); }
-  50% { transform: scale(1.0); }
+
+  0%,
+  100% {
+    transform: scale(0.0);
+  }
+
+  50% {
+    transform: scale(1.0);
+  }
 }
 
 /* Ensure the spinner is centered in the info-container */

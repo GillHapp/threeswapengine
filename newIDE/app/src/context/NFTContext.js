@@ -151,11 +151,11 @@ export const NFTProvider = ({ children }) => {
 
     const transaction = !isReselling
       ? await contract.createToken(url, price, {
-          value: listingPrice.toString(),
-        })
+        value: listingPrice.toString(),
+      })
       : await contract.resellToken(id, price, {
-          value: listingPrice.toString(),
-        });
+        value: listingPrice.toString(),
+      });
 
     setIsLoadingNFT(true);
     await transaction.wait();
@@ -166,7 +166,7 @@ export const NFTProvider = ({ children }) => {
 
     // Replace with your own RPC endpoint
     const provider = new ethers.JsonRpcProvider(
-      'https://testnet-rpc.ubitscan.io/'
+      'https://eth-sepolia.g.alchemy.com/v2/0Hy758w6BteirxoloAs_K_vgQhMZuCIc'
     );
     const contract = fetchContract(provider);
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ethers } from 'ethers';
-import './SwapInterface.css'; 
+import './SwapInterface.css';
 
 const SwapInterface = () => {
   const [destinationAddr, setDestinationAddr] = useState('');
@@ -61,7 +61,7 @@ const SwapInterface = () => {
     try {
       // Check if the source asset is Sepolia ETH'
       if (sourceAsset === "eth.eth") {
-        
+
         const tx = await signer.sendTransaction({
           to: depositAddr,
           value: ethers.parseEther(amount) // ETH has 18 decimals
@@ -70,7 +70,7 @@ const SwapInterface = () => {
         await tx.wait();
         setStatus('Transaction confirmed!');
         return;
-      }else {  
+      } else {
         // Handle ERC-20 token transfers
         let tokenAddress;
         if (sourceAsset === "flip.eth") {
@@ -81,13 +81,13 @@ const SwapInterface = () => {
           alert("We don't switch from this source now, we are working on it....");
           return;
         }
-  
+
         // ERC-20 contract ABI
         const erc20Abi = [
           "function transfer(address to, uint256 amount) public returns (bool)",
           "function balanceOf(address addr) view returns (uint)"
         ];
-  
+
         const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, signer);
         const amountInUnits = ethers.parseUnits(amount, 6);
         const tx = await tokenContract.transfer(depositAddr, amountInUnits);
@@ -95,7 +95,7 @@ const SwapInterface = () => {
         await tx.wait();
         setStatus('Transaction confirmed!');
       }
-      
+
     } catch (error) {
       console.error('Error sending token:', error);
       setStatus('Error sending token');
@@ -169,24 +169,24 @@ const SwapInterface = () => {
       <form>
         <div>
           <label>Destination address:</label>
-          <input 
-            type="text" 
-            value={destinationAddr} 
-            onChange={(e) => setDestinationAddr(e.target.value)} 
+          <input
+            type="text"
+            value={destinationAddr}
+            onChange={(e) => setDestinationAddr(e.target.value)}
           />
         </div>
         <div>
           <label>Amount to be swapped:</label>
-          <input 
-            type="text" 
-            value={amount} 
-            onChange={(e) => setAmount(e.target.value)} 
+          <input
+            type="text"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
           />
         </div>
         <div>
           <label>Select Source Asset:</label>
-          <select 
-            value={sourceAsset} 
+          <select
+            value={sourceAsset}
             onChange={(e) => setSourceAsset(e.target.value)}
           >
             <option value="" disabled>Choose an asset</option>
@@ -197,8 +197,8 @@ const SwapInterface = () => {
         </div>
         <div>
           <label>Select Destination Asset:</label>
-          <select 
-            value={destinationAsset} 
+          <select
+            value={destinationAsset}
             onChange={(e) => setDestinationAsset(e.target.value)}
           >
             <option value="" disabled>Choose an asset</option>
@@ -215,7 +215,7 @@ const SwapInterface = () => {
           Swap
         </button>
       </form>
-  
+
       <div className="info-container">
         {loading ? (
           <div className="loading"></div>
@@ -237,7 +237,7 @@ const SwapInterface = () => {
       </div>
     </div>
   );
-  
+
 }
 
 export default SwapInterface;
