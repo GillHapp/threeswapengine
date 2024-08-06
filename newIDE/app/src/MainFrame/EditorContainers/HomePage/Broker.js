@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ethers } from 'ethers';
-import './styles.css';
+import './SwapInterface.css';
 
 const SwapInterface = () => {
   const [destinationAddr, setDestinationAddr] = useState('');
@@ -11,9 +11,10 @@ const SwapInterface = () => {
   const [status, setStatus] = useState('');
   const [id, setId] = useState('');
   const [amount, setAmount] = useState('1');
-  const [provider, setProvider] = useState('');
-  const [signer, setSigner] = useState('')
+  const [provider, setProvider] = useState(null);
+  const [signer, setSigner] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [swapProvider, setSwapProvider] = useState("ChainFlip");
 
   const handleClick = async (e) => {
     e.preventDefault();
@@ -61,10 +62,9 @@ const SwapInterface = () => {
     try {
       // Check if the source asset is Sepolia ETH'
       if (sourceAsset === "eth.eth") {
-
-        const tx = await (signer).sendTransaction({
+        const tx = await signer.sendTransaction({
           to: depositAddr,
-          value: ethers.parseEther(amount)
+          value: ethers.parseEther(amount),
         });
         console.log('Transaction:', tx);
         await tx.wait();
@@ -131,7 +131,54 @@ const SwapInterface = () => {
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [depositAddr]);
+  }, [depositAddr, status, id]);
+
+  const postTransaction = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const url = 'https://api.swapkit.dev/channel';
+    const headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    };
+    const body = {
+      sellAsset: sourceAsset,
+      buyAsset: destinationAsset,
+      destinationAddress: destinationAddr,
+      affiliateFee: 0
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(body)
+      });
+      const data = await response.json();
+      console.log('Success:', data);
+      setId(data.channelId);
+      setDepositAddr(data.depositAddress);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSwap = (e) => {
+    switch (swapProvider) {
+      case "ChainFlip":
+        handleClick(e);
+        break;
+      case "ThorChain":
+        postTransaction(e);
+        break;
+      default:
+        handleClick(e);
+        break;
+    }
+  }
 
   useEffect(() => {
     const setupProvider = async () => {
@@ -160,122 +207,76 @@ const SwapInterface = () => {
     console.log("handleDeposit");
     setLoading(true);
     handleSendToken().finally(() => setLoading(false));
-    console.log("Depositted");
+    console.log("Deposited");
   };
 
   return (
-    <div className="container">
-      <div className='title'>Swap</div>
-      <div className="wrapper">
-        <div className="box">
-          <ul className='radio-group'>
-            <li className="radio-item">
-              <div className="flex items-center ps-3">
-                <input id="horizontal-list-radio-license" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" />
-                <label htmlFor="horizontal-list-radio-license" className="radio-label">Maya</label>
-              </div>
+    <div className="swap-interface">
+      <h1 className="title">Swap</h1>
+      <div className="content">
+        <div className="swap-form">
+          <ul className='swap-providers'>
+            <li className={`swap-provider ${swapProvider === 'Maya' ? 'selected' : ''}`}>
+              <input type="radio" value="Maya" name="list-radio" checked={swapProvider === 'Maya'} onChange={(e) => setSwapProvider(e.target.value)} />
+              <label>Maya</label>
             </li>
-            <li className="radio-item">
-              <div className="flex items-center ps-3">
-                <input id="horizontal-list-radio-license" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" />
-                <label htmlFor="horizontal-list-radio-license" className="radio-label">THORChain</label>
-              </div>
+            <li className={`swap-provider ${swapProvider === 'ThorChain' ? 'selected' : ''}`}>
+              <input type="radio" value="ThorChain" name="list-radio" checked={swapProvider === 'ThorChain'} onChange={(e) => setSwapProvider(e.target.value)} />
+              <label>THORChain</label>
             </li>
-            <li className="radio-item">
-              <div className="flex items-center ps-3">
-                <input id="horizontal-list-radio-license" type="radio" value="" name="list-radio" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" />
-                <label htmlFor="horizontal-list-radio-license" className="radio-label">ChainFlip</label>
-              </div>
+            <li className={`swap-provider ${swapProvider === 'ChainFlip' ? 'selected' : ''}`}>
+              <input type="radio" value="ChainFlip" name="list-radio" checked={swapProvider === 'ChainFlip'} onChange={(e) => setSwapProvider(e.target.value)} />
+              <label>ChainFlip</label>
             </li>
           </ul>
-          <div className="flex w-full h-[90%] p-6">
-            <div className="w-full border border-gray-400 p-8 rounded-xl mr-4 flex flex-col justify-center items-center min-h-[300px] bg-white shadow-md">
-              <form className="form">
-                <div className="form-group">
-                  <input type="text" name="floating_email" id="floating_email" className="form-input" placeholder=" " required value={destinationAddr} onChange={(e) => setDestinationAddr(e.target.value)} />
-                  <label htmlFor="floating_email" className="form-label">Destination address</label>
-                </div>
-                <div className="form-group pt-6">
-                  <input type="text" name="floating_amount" id="floating_amount" className="form-input" placeholder=" " required value={amount} onChange={(e) => setAmount(e.target.value)} />
-                  <label htmlFor="floating_amount" className="form-label">Amount to be swapped</label>
-                </div>
-                <label htmlFor="sourceAsset" className="block mt-4 text-sm font-medium text-black">Select Source Asset</label>
-                <select
-                  id="sourceAsset"
-                  className="select"
-                  value={sourceAsset}
-                  onChange={(e) => setSourceAsset(e.target.value)}
-                >
-                  <option value="" disabled>Choose an asset</option>
-                  <option value="eth.eth">eth.eth</option>
-                  <option value="flip.eth">flip.eth</option>
-                  <option value="usdt.eth">usdt.eth</option>
-                </select>
-                <label htmlFor="destAsset" className="block mt-4 text-sm font-medium text-gray-900">Select Destination Asset</label>
-                <select
-                  id="destAsset"
-                  className="select"
-                  value={destinationAsset}
-                  onChange={(e) => setDestinationAsset(e.target.value)}
-                >
-                  <option value="" disabled>Choose an asset</option>
-                  <option value="btc.btc">btc.btc</option>
-                  <option value="dot.dot">dot.dot</option>
-                  <option value="eth.arb">eth.arb</option>
-                  <option value="eth.eth">eth.eth</option>
-                  <option value="flip.eth">flip.eth</option>
-                  <option value="usdc.arb">usdc.arb</option>
-                  <option value="usdt.eth">usdt.eth</option>
-                </select>
-                <button className="button" onClick={handleClick} disabled={loading}>
-                  {loading ? (
-                    <span className="flex items-center">
-                      <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l4-4-4-4v4a12 12 0 11-8 8z"></path>
-                      </svg>
-                      Swapping...
-                    </span>
-                  ) : (
-                    'Swap'
-                  )}
-                </button>
-              </form>
-            </div>
+
+          <div className="form-group">
+            <label htmlFor="sourceAsset">Source Asset</label>
+            <input type="text" id="sourceAsset" value={sourceAsset} onChange={(e) => setSourceAsset(e.target.value)} />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="destinationAsset">Destination Asset</label>
+            <input type="text" id="destinationAsset" value={destinationAsset} onChange={(e) => setDestinationAsset(e.target.value)} />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="destinationAddr">Destination Address</label>
+            <input type="text" id="destinationAddr" value={destinationAddr} onChange={(e) => setDestinationAddr(e.target.value)} />
+          </div>
+
+          <div className="form-actions">
+            <button onClick={handleSwap} className={`swap-button ${loading ? 'loading' : ''}`} disabled={loading}>
+              {loading ? 'Loading...' : 'Swap'}
+            </button>
           </div>
         </div>
-        <div className="info-box">
-          <h2 className="info-title">Info</h2>
-          <p className="info-text">Deposit Address: {depositAddr || '...'}</p>
-          <p className="info-text">Time Duration: 24hrs</p>
+        <div className="deposit-info">
+          <h2>Deposit Information</h2>
+          <div className="form-group">
+            <label htmlFor="amount">Amount</label>
+            <input type="text" id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          </div>
 
-          {depositAddr && (
-            <p className="info-text">
-              {`Deposit ${sourceAsset} to ${depositAddr} address to initiate swap`}
-            </p>
-          )}
+          <div className="form-group">
+            <label htmlFor="depositAddr">Deposit Address</label>
+            <input type="text" id="depositAddr" value={depositAddr} readOnly />
+          </div>
 
-          <p className='info-text'>{`Status: ${status}`}</p>
+          <div className="form-group">
+            <label htmlFor="status">Status</label>
+            <input type="text" id="status" value={status} readOnly />
+          </div>
 
-          <button onClick={handleDeposit} className='button' disabled={loading}>
-            {loading ? (
-              <span className="flex items-center">
-                <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l4-4-4-4v4a12 12 0 11-8 8z"></path>
-                </svg>
-                Processing...
-              </span>
-            ) : (
-              'Deposit'
-            )}
-          </button>
-
-          {status === 'COMPLETE' && <p className='info-text-success'>Swap Completed</p>}
+          <div className="form-actions">
+            <button onClick={handleDeposit} className={`deposit-button ${loading ? 'loading' : ''}`} disabled={loading}>
+              {loading ? 'Loading...' : 'Deposit'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default SwapInterface;
